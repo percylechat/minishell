@@ -1,5 +1,11 @@
 #include "minishell.h"
 
+typedef struct s_list t_list;
+struct s_list{
+    char *line;
+    void *next;
+    void *prec;
+}
 
 int ft_strlen(char *str)
 {
@@ -135,6 +141,43 @@ char *getcommand(char *str)
     return (ret);
 }
 
+char	*ft_strchr(const char *s, int c)
+{
+	char	to_find;
+	int		i;
+
+	i = 0;
+	to_find = c;
+	while (s[i])
+	{
+		if (s[i] == to_find)
+			return ((char *)&s[i]);
+		i++;
+	}
+	if (c == '\0')
+		return ((char *)&s[i]);
+	return (NULL);
+}
+
+void    redir_file(char *str, char *output)
+{
+
+}
+
+void    check_redir(char *command, char *output)
+{
+    char *ret;
+
+    if ((ret = strchr(str, '<')) != NULL)
+        redir_ext(command, output);
+    else if ((ret = strchr(str, '>')) != NULL)
+    {
+        if (ret++ == '>')
+            redir_EOF(command, output);
+        redir_file(command, output);
+    }
+}
+
 void    ft_pwd(char *str)
 {
     char *path;
@@ -146,7 +189,8 @@ void    ft_pwd(char *str)
     if (!(path = malloc(sizeof(char) * 1000)))
         return ;
     getcwd(path, 1000);
-    printf("%s", path);
+    check_redir(str, path);
+    // printf("%s", path);
     free(path);
 }
 
